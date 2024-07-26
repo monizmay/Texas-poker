@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TwoPairs.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">poker</a> &gt; <a href="index.source.html" class="el_package">com.sap.ase.poker.model.hands</a> &gt; <span class="el_source">TwoPairs.java</span></div><h1>TwoPairs.java</h1><pre class="source lang-java linenums">package com.sap.ase.poker.model.hands;
+
+import com.sap.ase.poker.model.InvalidHandException;
+import com.sap.ase.poker.model.deck.Card;
+import com.sap.ase.poker.model.deck.Kind;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+public class TwoPairs extends Hand {
+
+    public static final int TWO_PAIRS_RANK = 3;
+
+    public TwoPairs(List&lt;Card&gt; cards) {
+<span class="fc" id="L17">        super(cards);</span>
+<span class="fc" id="L18">    }</span>
+
+    @Override
+    public int getRank() {
+<span class="fc" id="L22">        return TWO_PAIRS_RANK;</span>
+    }
+
+    @Override
+    protected List&lt;Card&gt; findRelevantCards(List&lt;Card&gt; cards) {
+<span class="fc" id="L27">        return findTwoHighestPairs(cards);</span>
+    }
+
+    @Override
+    protected int compareRelevantCards(Hand hand) {
+<span class="fc" id="L32">        int highestPairComparison = compareHighestPairByKind(hand);</span>
+<span class="fc bfc" id="L33" title="All 2 branches covered.">        if (highestPairComparison != 0) {</span>
+<span class="fc" id="L34">            return highestPairComparison;</span>
+        }
+
+<span class="fc" id="L37">        return compareLowerPairByKind(hand);</span>
+    }
+
+    private int compareLowerPairByKind(Hand hand) {
+<span class="fc" id="L41">        Integer lowestPairRank =</span>
+<span class="fc" id="L42">                this.getRelevantCards().stream().map(card -&gt; card.getKind().getRank())</span>
+<span class="fc" id="L43">                        .min(Integer::compareTo).get();</span>
+<span class="fc" id="L44">        Integer otherLowestPairRank =</span>
+<span class="fc" id="L45">                hand.getRelevantCards().stream().map(card -&gt; card.getKind().getRank())</span>
+<span class="fc" id="L46">                        .min(Integer::compareTo).get();</span>
+
+<span class="fc" id="L48">        return lowestPairRank - otherLowestPairRank;</span>
+    }
+
+    private int compareHighestPairByKind(Hand hand) {
+<span class="fc" id="L52">        Integer highestPairRank = findHighestPair(this.getRelevantCards());</span>
+<span class="fc" id="L53">        Integer otherHighestPairRank =</span>
+<span class="fc" id="L54">                findHighestPair(hand.getRelevantCards());</span>
+
+<span class="fc" id="L56">        return highestPairRank - otherHighestPairRank;</span>
+    }
+
+    private Integer findHighestPair(List&lt;Card&gt; RelevantCards) {
+<span class="fc" id="L60">        return RelevantCards.stream().map(card -&gt; card.getKind().getRank())</span>
+<span class="fc" id="L61">                .max(Integer::compareTo).get();</span>
+    }
+
+    private List&lt;Card&gt; findTwoHighestPairs(List&lt;Card&gt; cards) {
+<span class="fc" id="L65">        List&lt;Card&gt; twoPairs = findAllPairs(cards);</span>
+
+
+<span class="fc bfc" id="L68" title="All 2 branches covered.">        if (twoPairs.size() &lt; 4) {</span>
+<span class="fc" id="L69">            throw new InvalidHandException(&quot;Two PairsNotFound&quot;);</span>
+        }
+
+<span class="fc bfc" id="L72" title="All 2 branches covered.">        if (twoPairs.size() &gt; 4) {</span>
+<span class="fc" id="L73">            twoPairs.sort(Card::compareTo);</span>
+<span class="fc" id="L74">            twoPairs = twoPairs.subList(twoPairs.size() - 4, twoPairs.size());</span>
+        }
+
+<span class="fc" id="L77">        return twoPairs;</span>
+    }
+
+    private static List&lt;Card&gt; findAllPairs(List&lt;Card&gt; cards) {
+<span class="fc" id="L81">        Map&lt;Kind, List&lt;Card&gt;&gt; kindGroups = cards.stream().collect(Collectors.groupingBy(Card::getKind));</span>
+<span class="fc" id="L82">        List&lt;Card&gt; twoPairs =</span>
+<span class="fc bfc" id="L83" title="All 2 branches covered.">                kindGroups.values().stream().filter(group -&gt; group.size() == 2).flatMap(Collection::stream)</span>
+<span class="fc" id="L84">                        .collect(Collectors.toList());</span>
+<span class="fc" id="L85">        return twoPairs;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>
