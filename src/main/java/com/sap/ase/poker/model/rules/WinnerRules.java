@@ -26,6 +26,11 @@ public class WinnerRules {
         return new Winners(bestHand.getValue(), bestHand.getKey());
     }
 
+    public List<Card> getCombineCard(Player player, List<Card> communityCards){
+        Hand bestHand = handRules.findBestHand(combineCards(communityCards, player.getHandCards()));
+        return bestHand.getCards();
+    }
+
     private Map.Entry<Hand, List<Player>> mapPlayersToBestHand(List<Player> players,
                                                                List<Card> communityCards) {
         TreeMap<Hand, List<Player>> playerHands = new TreeMap<>();

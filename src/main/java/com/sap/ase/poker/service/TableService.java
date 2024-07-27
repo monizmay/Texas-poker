@@ -34,6 +34,7 @@ public class TableService {
     private int numberOfAction;
     private String winnerPlayerId;
     private Winners winnersList;
+    private List<Card> winnerCard;
 
     public Winners getWinnersList() {
         return winnersList;
@@ -58,6 +59,7 @@ public class TableService {
         this.numberOfFoldPlayer=0;
         this.numberOfAction=0;
         this.winnerPlayerId ="";
+        this.winnerCard = new ArrayList<>();
     }
 
     public GameState getState() {
@@ -124,10 +126,7 @@ public class TableService {
 //    }
 
     public List<Card> getWinnerHand() {
-        if(!winnerPlayerId.isEmpty() && getActivePlayer().size()!=1){
-            return getPlayerWithId(winnerPlayerId).getHandCards();
-        }
-        return new ArrayList<>();
+        return winnerCard;
     }
 
     public void start() {
@@ -234,6 +233,7 @@ public class TableService {
         WinnerRules winnerRules = new WinnerRules(new HandRules());
         winnersList = winnerRules.findWinners(getCommunityCards(), getActivePlayer());
         winnerPlayerId = winnersList.getWinners().get(0).getId();
+        winnerCard = winnerRules.getCombineCard(getPlayerWithId(winnerPlayerId), getCommunityCards());
         getPlayerWithId(winnerPlayerId).addCash(potAmount);
     }
 
